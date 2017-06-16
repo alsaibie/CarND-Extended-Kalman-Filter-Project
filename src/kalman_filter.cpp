@@ -32,10 +32,10 @@ void KalmanFilter::Update(const VectorXd &z) {
   TODO:
     * update the state by using Kalman Filter equations
   */
-
+    MatrixXd Ht = H_.transpose();
     VectorXd y = z - H_ * x_;
-    MatrixXd S_ = H_ * P_ * H_.transpose() + R_;
-    MatrixXd K = P_ * H_.transpose() * S_.inverse();
+    MatrixXd S_ = H_ * P_ * Ht + R_;
+    MatrixXd K = P_ * Ht * S_.inverse();
     I_ = Eigen::Matrix4d::Identity();
     x_ = x_ + K * y;
     P_ = (I_ - K * H_) * P_;
@@ -48,7 +48,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   */
 
     auto r = sqrt(pow(x_(0), 2) + pow(x_(1), 2));
-    auto phi = atan2(x_(1), x_(2));
+    auto phi = atan2(x_(1), x_(0));
     double rdot;
     if (fabs(r) < 0.0001) {
         rdot = 0;
@@ -59,9 +59,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     VectorXd z_est(3);
     z_est << r, phi, rdot;
 
+    MatrixXd Ht = H_.transpose();
     VectorXd y = z - z_est;
-    MatrixXd S_ = H_ * P_ * H_.transpose() + R_;
-    MatrixXd K = P_ * H_.transpose() * S_.inverse();
+    while (y(1) > M_PI) y(1) -= 2. * M_PI;
+    while (y(1) < -M_PI) y(1) += 2. * M_PI;
+    MatrixXd S_ = H_ * P_ * Ht + R_;
+    MatrixXd K = P_ * Ht * S_.inverse();
 
 
     I_ = Eigen::Matrix4d::Identity();

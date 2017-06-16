@@ -11,7 +11,8 @@ Based on which type of measurement is received, either a linear Kalman Filter is
  
 ![Sensor Fusion FLow](png/sensorfusionflow.png)
 
-An intermediate value for the process noise covariance is set, indicating that we trust our process model reasonably. The measurement noise covariance for the lidar is set very low, indicating our high confidence in the lidar measurement in estimating the position. The measurement noise convariance for the ladar is slightly higher, indicating we trust it less than we do the lidar.
+
+The measurement noise covariance is fixed for both the lidar and radar, as specified by the sensor manuals. The process noise covariance is given a higher value, indicating less confidence in the process model.
 
 The following figure shows the vehicle motion track, with the ground truth, the estimated position and the markers indicating the position measurements. 
 
